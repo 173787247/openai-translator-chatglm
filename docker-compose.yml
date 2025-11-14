@@ -1,0 +1,57 @@
+services:
+  translator:
+    # 直接使用已有的 PyTorch 镜像（无需构建）
+    image: pytorch/pytorch:2.7.0-cuda12.8-cudnn9-devel
+    container_name: openai-translator-chatglm
+    restart: unless-stopped
+    ports:
+      - "7860:7860"
+    working_dir: /app
+    environment:
+      - MODEL_PATH=${MODEL_PATH:-THUDM/chatglm2-6b}
+      - DEVICE=${DEVICE:-cuda}
+      - MAX_LENGTH=${MAX_LENGTH:-2048}
+      - TOP_P=${TOP_P:-0.7}
+      - TEMPERATURE=${TEMPERATURE:-0.95}
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+      - GRADIO_SHARE=${GRADIO_SHARE:-False}
+      - HF_HOME=/app/models
+      - TRANSFORMERS_CACHE=/app/models
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # 挂载项目代码
+      - .:/app
+      # 模型缓存目录（避免重复下载）
+      - ./models:/app/models
+      # 输出文件目录
+      - ./output:/app/output
+      # 临时文件目录
+      - ./temp:/app/temp
+    # GPU 配置（参考 RTX 5080 配置）
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # 增加共享内存（对模型加载有帮助）
+    shm_size: '8gb'
+    stdin_open: true
+    tty: true
+    # 启动命令：安装依赖并运行应用
+    command: >
+      bash -c "
+        echo '安装依赖...' &&
+        pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple gradio>=4.0.0 transformers==4.35.2 sentencepiece>=0.1.99 protobuf>=3.20.0 pymupdf>=1.23.0 PyPDF2>=3.0.0 pdf2image>=1.16.3 Pillow>=10.0.0 reportlab>=4.0.0 langdetect>=1.0.9 python-dotenv>=1.0.0 accelerate>=0.20.0 cpm-kernels>=1.0.11 mdtex2html>=1.2.0 huggingface-hub>=0.16.0 &&
+        echo '依赖安装完成，启动应用...' &&
+        python main.py
+      "
+    networks:
+      - translator-network
+
+networks:
+  translator-network:
+    driver: bridge
+

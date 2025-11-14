@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  translator:
+    image: python:3.10-slim
+    container_name: openai-translator-chatglm
+    restart: unless-stopped
+    ports:
+      - "7860:7860"
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./models:/app/models
+      - ./output:/app/output
+      - ./temp:/app/temp
+    environment:
+      - MODEL_PATH=${MODEL_PATH:-THUDM/chatglm2-6b}
+      - DEVICE=${DEVICE:-cuda}
+      - MAX_LENGTH=${MAX_LENGTH:-2048}
+      - TOP_P=${TOP_P:-0.7}
+      - TEMPERATURE=${TEMPERATURE:-0.95}
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+      - GRADIO_SHARE=${GRADIO_SHARE:-False}
+    command: >
+      sh -c "
+        pip install -i https://pypi.tuna.tsinghua.edu.cn/simple gradio python-dotenv langdetect pymupdf PyPDF2 reportlab Pillow &&
+        python main.py
+      "
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - translator-network
+
+networks:
+  translator-network:
+    driver: bridge
+

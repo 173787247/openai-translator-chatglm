@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 环境变量
+.env
+.env.local
+
+# 临时文件
+temp/
+*.tmp
+*.log
+
+# 输出文件
+output/
+*.pdf
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 文档
+*.md
+!README.md
+
+# 模型文件（如果很大，不包含在镜像中）
+models/
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# 操作系统
+.DS_Store
+Thumbs.db
+

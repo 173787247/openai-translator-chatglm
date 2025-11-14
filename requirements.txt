@@ -1,0 +1,18 @@
+gradio>=4.0.0
+transformers>=4.30.0
+# torch 将通过 Dockerfile 单独安装 CUDA 版本
+# torch>=2.0.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+pymupdf>=1.23.0
+PyPDF2>=3.0.0
+pdf2image>=1.16.3
+Pillow>=10.0.0
+reportlab>=4.0.0
+langdetect>=1.0.9
+python-dotenv>=1.0.0
+accelerate>=0.20.0
+cpm-kernels>=1.0.11
+mdtex2html>=1.2.0
+huggingface-hub>=0.16.0
+
